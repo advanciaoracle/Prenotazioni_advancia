@@ -131,13 +131,13 @@ create table RES2.tlog(
 create sequence RES2.seq_tlog;
 
 create or replace package RES2.pkg_utils as 
-procedure pdog(pcaller varchar2, ptesto varchar2);
+procedure plog(pcaller varchar2, ptesto varchar2);
 end;
 /
 
 create or replace package body RES2.pkg_utils as
 
-  procedure pdog(pcaller varchar2, ptesto varchar2) as
+  procedure plog(pcaller varchar2, ptesto varchar2) as
   pragma autonomous_transaction;
   begin
     insert into tlog (
@@ -157,7 +157,7 @@ create or replace package body RES2.pkg_utils as
         when others then
             dbms_output.put_line('SQLCODE: '||sqlcode|| ' SQLERRM: '|| substr(sqlerrm, 1, 100));
             rollback; --> valido solo all'interno di questa transazione
-  end pdog;
+  end plog;
 end;
 /
 
@@ -218,23 +218,23 @@ v_c         number      := 0;                       -- counter giorni liberi
 
 BEGIN
 
-RES2.pkg_utils.pdog('P1','INIZIO PROCEDURA');
+RES2.pkg_utils.plog('P1','INIZIO PROCEDURA');
 
 -- vediamo se abbiamo disponibilità
 
-RES2.pkg_utils.pdog('check_disp','SERVONO '||p_pd||' posti per giorni '|| v_lun);
+RES2.pkg_utils.plog('check_disp','SERVONO '||p_pd||' posti per giorni '|| v_lun);
 
 open c1;
 loop
     fetch c1 into rec1;
     exit when c1%notfound;
-    RES2.pkg_utils.pdog('CHECK_DISP','REC1 IS '|| rec1.pdib || ' ' || rec1.idts);
+    RES2.pkg_utils.plog('CHECK_DISP','REC1 IS '|| rec1.pdib || ' ' || rec1.idts);
 
     if v_loc <> rec1.idts then
         v_c := 0;                   -- ho cambiato struttura, riazzero il counter
     end if;
 
-    RES2.pkg_utils.pdog('CHECK_DISP','CERCO '|| p_pd || ' POSTI E NE HO '|| rec1.pdib || ' NELLA STRUTT ' ||  rec1.idts);
+    RES2.pkg_utils.plog('CHECK_DISP','CERCO '|| p_pd || ' POSTI E NE HO '|| rec1.pdib || ' NELLA STRUTT ' ||  rec1.idts);
 
     if rec1.pdib >= p_pd then       -- se ho posti liberi avanzo il counter, altrimenti no(n faccio nulla)
         v_c := v_c + 1;
@@ -245,7 +245,7 @@ loop
         exit;
     end if;
     
-    RES2.pkg_utils.pdog('CHECK_DISP',v_c);
+    RES2.pkg_utils.plog('CHECK_DISP',v_c);
     
     v_loc := rec1.idts;            --tengo in memoria la struttura su cui ero
 
@@ -261,7 +261,7 @@ where cf = p_cf;
 
 IF v_c = 0 and v_idts <> 0 then  
     INSERT INTO RES2.TC(idtc, CF, NOME) VALUES (RES2.seq_idtc.nextval, p_cf, p_nome);               -- c'è la possibilità di returning sulla insert
-    RES2.pkg_utils.pdog('REG UTENTE ','nuovo utente ');
+    RES2.pkg_utils.plog('REG UTENTE ','nuovo utente ');
 END IF;
 
 -- avendo registrato il cliente abbiamo un suo id e possiamo fare l'insert nella prenotazioni
@@ -269,18 +269,18 @@ END IF;
 IF  v_idts <> 0 then     
     select idtc into v_idtc from RES2.tc where cf = p_cf;
     INSERT INTO RES2.TP(idtp, idtc, idts, DAL, AL, pl, dins) VALUES (RES2.seq_idtp.nextval, v_idtc, v_idts, p_dal, p_al, p_pd, sysdate);
-    RES2.pkg_utils.pdog('REG PRENOTAZIONE','nuova prenotazione ');
-ELSE RES2.pkg_utils.pdog('P1','strutture al compdeto nel periodo '|| p_dal ||' - '|| p_al);
+    RES2.pkg_utils.plog('REG PRENOTAZIONE','nuova prenotazione ');
+ELSE RES2.pkg_utils.plog('P1','strutture al compdeto nel periodo '|| p_dal ||' - '|| p_al);
 END IF;
 
-RES2.pkg_utils.pdog('P1','FINE PROCEDURA');
+RES2.pkg_utils.plog('P1','FINE PROCEDURA');
 
 COMMIT;
 
 exception
         when others then
          rollback;
-         RES2.pkg_utils.pdog('registrazione prenotazione', 'SQLCODE: '||sqlcode|| ' SQLERRM: '|| substr(sqlerrm, 1, 50));
+         RES2.pkg_utils.plog('registrazione prenotazione', 'SQLCODE: '||sqlcode|| ' SQLERRM: '|| substr(sqlerrm, 1, 50));
 
 END;
 

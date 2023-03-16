@@ -1,4 +1,3 @@
-
 -- CREAZIONE SCHEMA
 
 DROP USER RES CASCADE;
@@ -169,7 +168,8 @@ CREATE OR REPLACE VIEW RES.VTABELLONE ("IDTS", "GCAL", "TOTPP") AS
 --- MAIN PROCEDURE PER LE PRENOTAZIONI CHE RICHIAMA LE PRECEDENTI
 -------------------------------------------------------------------------------------------------------------------
 
-create or replace PROCEDURE     P_MAIN(p_dal IN DATE, p_al IN DATE, p_pl IN NUMBER, p_nome IN VARCHAR2, p_cf IN VARCHAR2)
+
+create PROCEDURE     RES.P_MAIN(p_dal IN DATE, p_al IN DATE, p_pl IN NUMBER, p_nome IN VARCHAR2, p_cf IN VARCHAR2)
 IS
 
 v_idtc number;
@@ -212,9 +212,9 @@ loop
 
     RES.pkg_utils.plog('CHECK_DISP','CERCO '|| p_pl || ' POSTI E NE HO '|| rec1.plib || ' NELLA STRUTT ' ||  rec1.id_ts);
 
-    if rec1.plib >= p_pl then       -- se ho posti liberi avanzo il counter, altrimenti no(n faccio nulla)
+    IF rec1.plib >= p_pl THEN       -- se ho posti liberi avanzo il counter, altrimenti no(n faccio nulla)
         v_c := v_c + 1;
-    end if;    
+    END IF;
 
     if v_c = v_lun then             -- se il counter ha trovato tutti i giorni disponibili torno la struttura, altrimenti passerò a quella successiva
         v_idts := v_loc;
