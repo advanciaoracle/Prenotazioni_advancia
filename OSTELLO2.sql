@@ -55,17 +55,7 @@ create table RES2.TPP_STAGE(
         fp    VARCHAR2(30)
             );
 
---DROP TABLE RES2.TPP;   
-create table RES2.TPP as (select
-        to_number(idttp)                idttp,
-        to_date(dal, 'DD/MM/YYYY')      dal,
-        to_date(al, 'DD/MM/YYYY')       al,
-        to_number(pl)                   pl,
-        nome                            nome,
-        CF                              cf,
-        sysdate                         dins,
-        0                               fp
-from res2.tpp_stage);
+
 
 
 ---------------------------------------------------------------------------------------------------------
@@ -220,7 +210,7 @@ BEGIN
 
 RES2.pkg_utils.plog('P1','INIZIO PROCEDURA');
 
--- vediamo se abbiamo disponibilità
+-- vediamo se abbiamo disponibilitï¿½
 
 RES2.pkg_utils.plog('check_disp','SERVONO '||p_pd||' posti per giorni '|| v_lun);
 
@@ -240,7 +230,7 @@ loop
         v_c := v_c + 1;
     end if;    
 
-    if v_c = v_lun then             -- se il counter ha trovato tutti i giorni disponibili torno la struttura, altrimenti passerò a quella successiva
+    if v_c = v_lun then             -- se il counter ha trovato tutti i giorni disponibili torno la struttura, altrimenti passerï¿½ a quella successiva
         v_idts := v_loc;
         exit;
     end if;
@@ -252,15 +242,15 @@ loop
 end loop;
 close c1;
 
--- ora vediamo se il cliente non è inserito lo inseriamo
+-- ora vediamo se il cliente non ï¿½ inserito lo inseriamo
 
 select count(idtc) 
-into v_c                            -- anche se l'ho usato prima, non mi riservirà più quindi posso riciclare la var
+into v_c                            -- anche se l'ho usato prima, non mi riservirï¿½ piï¿½ quindi posso riciclare la var
 from RES2.tc
 where cf = p_cf;
 
 IF v_c = 0 and v_idts <> 0 then  
-    INSERT INTO RES2.TC(idtc, CF, NOME) VALUES (RES2.seq_idtc.nextval, p_cf, p_nome);               -- c'è la possibilità di returning sulla insert
+    INSERT INTO RES2.TC(idtc, CF, NOME) VALUES (RES2.seq_idtc.nextval, p_cf, p_nome);               -- c'ï¿½ la possibilitï¿½ di returning sulla insert
     RES2.pkg_utils.plog('REG UTENTE ','nuovo utente ');
 END IF;
 
@@ -305,8 +295,11 @@ RES2.P1('15/12/2022', '19/12/2022', 5, 'UGO', 'UGOWEINFO');
 RES2.P1('16/12/2022', '19/12/2022', 10, 'MARCO', 'MASOIHDFW1');
 RES2.P1('20/12/2022', '22/12/2022', 20, 'UGO', 'UGOWEINFO');
 RES2.P1('18/12/2022', '22/12/2022', 30, 'LEONARDO', 'LASODINHOI');
-RES2.P1('20/12/2023', '18/12/2023', -2, 'ANNA', 'ASIJBDKJA');        -- da strutture al compdeto, non è gestito bene ma almeno non si rompe
+RES2.P1('20/12/2023', '18/12/2023', -2, 'ANNA', 'ASIJBDKJA');        -- da strutture al compdeto, non ï¿½ gestito bene ma almeno non si rompe
 END;
 /
 
 */
+
+
+EXIT;
